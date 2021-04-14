@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "345461880229",
+    "project_id": "e-token-system",
+    "storage_bucket": "e-token-system.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:345461880229:android:f7c2c0d2ffb67db3c2e44c",
+        "android_client_info": {
+          "package_name": "com.example.etoken_flutter_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "345461880229-dv1t0ivh6ufd3p95u2q3mch187eo70la.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxuV4eJ1c57XV2-AhgOgfoRva13vqJaI8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "345461880229-dv1t0ivh6ufd3p95u2q3mch187eo70la.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
