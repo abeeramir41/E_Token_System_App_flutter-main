@@ -1,15 +1,48 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   // This widget is the root of your application.
   @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  User user;
+
+  String name;
+
+  String email;
+
+  getUser()async {
+    user = FirebaseAuth.instance.currentUser;
+   DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance.collection("Organizations").doc(user.uid).get();
+   print(documentSnapshot.data()["name"]);
+   setState(() {
+     name = documentSnapshot.data()["name"];
+     email = documentSnapshot.data()["email"];
+   });
+   return documentSnapshot;
+
+  }
+
+  @override
+  void initState() {
+    getUser();
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+   // getTokens();
     return  Scaffold(
         appBar: AppBar(
           title: Center(
             child: const Text('Profile'),
           ),
         ),
-        body: ListView(
+        body:  name == null && email == null ? Center(child: CircularProgressIndicator(),) : ListView(
           children: <Widget>[
             Container(
               height: 250,
@@ -36,7 +69,7 @@ class ProfilePage extends StatelessWidget {
                     height: 10,
                   ),
                   Text(
-                    'Company Name',
+                    name == null ?'Company Name' : name,
                     style: TextStyle(
                       fontSize: 35,
                       fontWeight: FontWeight.bold,
@@ -44,7 +77,7 @@ class ProfilePage extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Company@email.com',
+                    email == null ? 'Company@email.com' : email,
                     style: TextStyle(
                       fontSize: 20,
                       color: Colors.white,

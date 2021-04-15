@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -9,7 +11,10 @@ class InputToken extends StatefulWidget {
 
 class _InputTokenState extends State<InputToken> {
   String dropdownValue = 'Select';
-  var selectedCurrency;
+  var selectedOrganization;
+  TextEditingController name = TextEditingController();
+  TextEditingController email = TextEditingController();
+  TextEditingController phone = TextEditingController();
   var _formkey = GlobalKey<FormState>();
 
 
@@ -27,18 +32,18 @@ class _InputTokenState extends State<InputToken> {
             stream: Firestore.instance.collection("Organizations").snapshots(),
     builder: (context, snapshot) {
       if (!snapshot.hasData)
-        const Text("Loading.....");
+        return CircularProgressIndicator();
       else {
-        List<DropdownMenuItem> currencyItems = [];
-        for (int i = 0; i < snapshot.data.documents.length; i++) {
-          DocumentSnapshot snap = snapshot.data.documents[i];
-          currencyItems.add(
+        List<DropdownMenuItem> organization = [];
+        for (int i = 0; i < snapshot.data.docs.length; i++) {
+          DocumentSnapshot snap = snapshot.data.docs[i];
+          organization.add(
             DropdownMenuItem(
               child: Text(
                 snap['name'],
                 style: TextStyle(color: Colors.black),
               ),
-              value: "${snap.documentID}",
+              value: "${snap.id}",
             ),
           );
         }
@@ -50,26 +55,26 @@ class _InputTokenState extends State<InputToken> {
             color: Colors.green,
           ),
           icon: Icon(Icons.arrow_downward),
-            items: currencyItems,
-            onChanged: (currencyValue) {
+            items: organization,
+            onChanged: (orgs) {
           final snackBar = SnackBar(
             content: Text(
-              'Selected Currency value is $currencyValue',
+              'Selected Organization value is a $orgs',
               style: TextStyle(color: Colors.black),
             ),
           );
           Scaffold.of(context).showSnackBar(snackBar);
           setState(() {
-            selectedCurrency = currencyValue;
+            selectedOrganization = orgs;
           });
         },
-      value: selectedCurrency,
-      isExpanded: false,
-      hint: new Text(
-      "Choose Currency Type",
-      style: TextStyle(color: Colors.black),
-      ),
-        );
+              value: selectedOrganization,
+                isExpanded: true,
+               hint: new Text(
+                "Choose Organization",
+                style: TextStyle(color: Colors.black),
+               ),
+               );
       }
 
     }
@@ -80,6 +85,7 @@ class _InputTokenState extends State<InputToken> {
                 height: 12,
               ),
               TextFormField(
+                controller: email,
                 validator: (String value) {
                   if (value.isEmpty) {
                     return 'Please enter Email';
@@ -97,6 +103,7 @@ class _InputTokenState extends State<InputToken> {
                 height: 12,
               ),
               TextFormField(
+                controller: name,
                 validator: (String value) {
                   if (value.isEmpty) {
                     return 'Please enter your name';
@@ -114,6 +121,7 @@ class _InputTokenState extends State<InputToken> {
                 height: 12,
               ),
               TextFormField(
+                controller: phone,
                 validator: (String value) {
                   if (value.isEmpty) {
                     return 'Please enter your Phone Number';
@@ -135,15 +143,24 @@ class _InputTokenState extends State<InputToken> {
                 // height: 35,
                 child: RaisedButton(
                   color: Colors.green,
-                  onPressed: () {
-                    setState(() {
+                  onPressed: () async {
                       if (_formkey.currentState.validate()){
+                        int tokenNum = Random().nextInt(100000);
+                        await FirebaseFirestore.instance.collection("Organizations").doc(selectedOrganization)
+                        .collection("tokens").doc(tokenNum.toString()).set(
+                          {
+                            "name" : name.text,
+                            "email" : email.text,
+                            "phone" : phone.text,
+                            "tokenNum" : tokenNum,
+                            "time" : DateTime.now()
+                          }
+                        );
                         Scaffold.of(context)
                             .showSnackBar(SnackBar(content: Text('Token Generated')));
-                      }
+                      
                     return null;
                     }
-                    );
                   },
                   child: Text(
                     'GET TOKEN',

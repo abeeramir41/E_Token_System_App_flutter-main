@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'profile_Page.dart';
 
@@ -8,6 +10,21 @@ class Organization_Page extends StatefulWidget {
 }
 
 class _Organization_PageState extends State<Organization_Page> {
+  Future data;
+  User user;
+  getTokens()async {
+     user = FirebaseAuth.instance.currentUser;
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection("Organizations").doc(user.uid).collection("tokens").get();
+    return querySnapshot.docs;
+  }
+
+  @override
+  void initState() {
+   getTokens();
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -39,19 +56,63 @@ class _Organization_PageState extends State<Organization_Page> {
             ),
           ],
         ),
-        body: ListView(
-          children: [
-            ListTile(
-              leading: Icon(
-                Icons.account_circle,
-                size: 40,
-                color: Colors.green,
-              ),
-              title: Text('User Name'),
-              subtitle: Text('Token Number: 0000'),
-              trailing: Icon(Icons.delete),
-            )
-          ],
+        body:  FutureBuilder(
+            future: getTokens(),
+            builder: (context, snapshot){
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else
+                return snapshot.data.length == 0 || snapshot.data.length == null ? Container(child: Center(child: Text("No Tokens")),) :
+                ListView.builder(
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, index){
+                      return ListTile(
+                        leading: Icon(
+                          Icons.account_circle,
+                          size: 40,
+                          color: Colors.green,
+                        ),
+                        title: Text(snapshot.data[index].data()["name"]),
+                        subtitle: Text(snapshot.data[index].data()["tokenNum"].toString()),
+                        trailing: InkWell(
+                          onTap: () async {
+                            showDialog(context: context,
+                                builder: (BuildContext context){
+                                  return AlertDialog(
+                                    title: Text("Are you sure?"),
+                                    actions: [
+                                      TextButton(onPressed: ()async {
+                                        Navigator.pop(context);
+                                        FirebaseFirestore.instance.collection("Organizations")
+                                            .doc(user.uid).collection("tokens").doc(snapshot.data[index].data()["tokenNum"].toString())
+                                            .delete()
+                                            .then((value) => print("User Deleted"))
+                                            .catchError((error) => print("Failed to delete user: $error"));
+
+
+                                        setState(() {
+
+                                        });
+                                      }, child: Text("Yes")),
+
+                                      TextButton(onPressed: (){
+                                        Navigator.pop(context);
+                                      }, child: Text("No")),
+                                    ],
+                                  );
+                                }
+
+                            );
+                          },
+                          child: Icon(Icons.delete),
+                        ),
+                      );
+                    }
+                );
+            }
+
         ),
       ),
     );
