@@ -8,6 +8,7 @@ class TokenList extends StatefulWidget {
 
 class _TokenListState extends State<TokenList> {
   var selectedOrganization;
+  int time = 0;
 getTokens(var orgs)async {
   DateTime dates = DateTime.now();
   print(orgs);
@@ -94,12 +95,12 @@ getTokens(var orgs)async {
                      shrinkWrap: true,
                      itemCount: snapshot.data.length,
                      itemBuilder: (context, index){
-
+                     time = time + 3;
                        return Container(
                            height: MediaQuery.of(context).size.height *0.1,
 
                            child:
-                           Tokens(name: snapshot.data[index].data()["name"], tokenNum: snapshot.data[index].data()["tokenNum"].toString(),));
+                           Tokens(name: snapshot.data[index].data()["name"], tokenNum: snapshot.data[index].data()["tokenNum"].toString(),time: time,));
                      }
                  );
              }
@@ -115,7 +116,8 @@ getTokens(var orgs)async {
 class Tokens extends StatefulWidget {
   String name;
   String tokenNum;
-  Tokens({this.name, this.tokenNum});
+  int time;
+  Tokens({this.name, this.tokenNum, this.time});
   @override
   _TokensState createState() => _TokensState();
 }
@@ -136,7 +138,7 @@ class _TokensState extends State<Tokens> {
           ),
           title: Text(widget.name),
           subtitle: Text(widget.tokenNum),
-          trailing: Text("Expected Time 10 mins", style: TextStyle(color: Colors.green),),
+          trailing: Text("Expected Time ${widget.time} mins", style: TextStyle(color: Colors.green),),
         ),
       ),
     );
