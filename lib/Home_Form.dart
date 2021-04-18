@@ -67,6 +67,7 @@ class _InputTokenState extends State<InputToken> {
           Scaffold.of(context).showSnackBar(snackBar);
           var num =await FirebaseFirestore.instance.collection("tokenNum").doc(orgs).get();
           tokenNum = num.data()["tokenNum"];
+          print(tokenNum);
           setState(() {
 
             selectedOrganization = orgs;
@@ -163,7 +164,7 @@ class _InputTokenState extends State<InputToken> {
                         await FirebaseFirestore.instance.collection("tokenNum").doc(selectedOrganization)
                             .update(
                             {
-                              "tokenNum" : tokenNum++,
+                              "tokenNum" : ++tokenNum,
                             }
                         );
                         Scaffold.of(context)
