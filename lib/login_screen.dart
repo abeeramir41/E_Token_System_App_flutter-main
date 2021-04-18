@@ -24,7 +24,17 @@ class _Login_formState extends State<Login_form> {
   String stateuss;
   @override
 
+  Future<User> ifRegister(String email, String pass) async {
+    try {
+      var result = await _auth.signInWithEmailAndPassword(email: email, password: pass);
+      //await getUser();
+      return result.user;
+    } catch (e) {
+      print(e);
+      return null;
+    }
 
+  }
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -58,26 +68,13 @@ class _Login_formState extends State<Login_form> {
                         height: 35.0,
                         child: RaisedButton(
                           onPressed: ()  async {
-                            DocumentSnapshot document = await FirebaseFirestore.instance.collection('Organizations').document(emailController.text).get();
-
-
-                            // if(document['status']== 'false'){
-                            //   print(document['status']);
-                            //   Fluttertoast.showToast(msg: "You Need Aproval from admin for login");
-                            // }else{
-                            _authService
-                                .signIn(
-                                emailController.text, passwordController.text)
-                                .then((value) {
-                              if(value!=null) {
-                                Center(child: CircularProgressIndicator());
-                                return Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Organization_Page()
-                                    ));
-                              }
-                            });
+                            User result = await ifRegister(emailController.text, passwordController.text);
+                            if(result != null){
+                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => Organization_Page()) );
+                            } else {
+                              Scaffold.of(context)
+                                  .showSnackBar(SnackBar(content: Text("Not SignIn successfully")));
+                            }
 
                           },
                           color: Theme.of(context).primaryColor,

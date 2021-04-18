@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:etoken_flutter_app/packages/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import 'homeScreen.dart';
 class ProfilePage extends StatefulWidget {
   // This widget is the root of your application.
   @override
@@ -9,7 +12,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   User user;
-
+  AuthService authService;
   String name;
 
   String email;
@@ -41,6 +44,16 @@ class _ProfilePageState extends State<ProfilePage> {
           title: Center(
             child: const Text('Profile'),
           ),
+          actions: [
+            IconButton(icon: Icon(Icons.logout),
+                onPressed: () async {
+             await  FirebaseAuth.instance.signOut();
+
+                  Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+                      HomeScreen()), (Route<dynamic> route) => false);
+
+            })
+          ],
         ),
         body:  name == null && email == null ? Center(child: CircularProgressIndicator(),) : ListView(
           children: <Widget>[

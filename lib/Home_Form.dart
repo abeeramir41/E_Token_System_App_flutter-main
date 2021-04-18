@@ -16,6 +16,7 @@ class _InputTokenState extends State<InputToken> {
   TextEditingController email = TextEditingController();
   TextEditingController phone = TextEditingController();
   var _formkey = GlobalKey<FormState>();
+  int tokenNum;
 
 
   @override
@@ -29,7 +30,7 @@ class _InputTokenState extends State<InputToken> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
             StreamBuilder<QuerySnapshot>(
-            stream: Firestore.instance.collection("Organizations").snapshots(),
+            stream: FirebaseFirestore.instance.collection("Organizations").snapshots(),
     builder: (context, snapshot) {
       if (!snapshot.hasData)
         return CircularProgressIndicator();
@@ -56,7 +57,7 @@ class _InputTokenState extends State<InputToken> {
           ),
           icon: Icon(Icons.arrow_downward),
             items: organization,
-            onChanged: (orgs) {
+            onChanged: (orgs) async {
           final snackBar = SnackBar(
             content: Text(
               'Selected Organization value is a $orgs',
@@ -64,7 +65,10 @@ class _InputTokenState extends State<InputToken> {
             ),
           );
           Scaffold.of(context).showSnackBar(snackBar);
+          var num =await FirebaseFirestore.instance.collection("tokenNum").doc(orgs).get();
+          tokenNum = num.data()["tokenNum"];
           setState(() {
+
             selectedOrganization = orgs;
           });
         },
@@ -145,7 +149,7 @@ class _InputTokenState extends State<InputToken> {
                   color: Colors.green,
                   onPressed: () async {
                       if (_formkey.currentState.validate()){
-                        int tokenNum = Random().nextInt(100000);
+
                         await FirebaseFirestore.instance.collection("Organizations").doc(selectedOrganization)
                         .collection("tokens").doc(tokenNum.toString()).set(
                           {
@@ -155,6 +159,12 @@ class _InputTokenState extends State<InputToken> {
                             "tokenNum" : tokenNum,
                             "time" : DateTime.now()
                           }
+                        );
+                        await FirebaseFirestore.instance.collection("tokenNum").doc(selectedOrganization)
+                            .update(
+                            {
+                              "tokenNum" : tokenNum++,
+                            }
                         );
                         Scaffold.of(context)
                             .showSnackBar(SnackBar(content: Text('Token Generated')));

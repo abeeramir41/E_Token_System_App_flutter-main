@@ -34,11 +34,16 @@ class AuthService {
   Future<User> createPerson(String name, String email, String password,String Phone) async {
     var user = await _auth.createUserWithEmailAndPassword(
         email: email, password: password);
-    String fcmToken= await _fcm.getToken();
+//    String fcmToken= await _fcm.getToken();
     await _firestore
         .collection("Organizations")
         .doc(user.user.uid)
-        .set({'name': name, 'email': email,'phone':Phone,'uid': user.user.uid,'token': fcmToken,'status':false});
+        .set({'name': name, 'email': email,'phone':Phone,'uid': user.user.uid,'tokenNum': 1000,'status':false, });
+
+    await _firestore
+        .collection("tokenNum")
+        .doc(user.user.uid)
+        .set({'tokenNum': 1000, });
 
     return user.user;
   }

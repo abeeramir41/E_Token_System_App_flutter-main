@@ -13,8 +13,10 @@ class _Organization_PageState extends State<Organization_Page> {
   Future data;
   User user;
   getTokens()async {
+    DateTime dates = DateTime.now();
      user = FirebaseAuth.instance.currentUser;
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection("Organizations").doc(user.uid).collection("tokens").get();
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection("Organizations").doc(user.uid).collection("tokens").where("time",
+        isGreaterThanOrEqualTo: DateTime(dates.year, dates.month, dates.day)).get();
     return querySnapshot.docs;
   }
 

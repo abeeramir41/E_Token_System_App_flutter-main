@@ -9,8 +9,10 @@ class TokenList extends StatefulWidget {
 class _TokenListState extends State<TokenList> {
   var selectedOrganization;
 getTokens(var orgs)async {
+  DateTime dates = DateTime.now();
   print(orgs);
-  QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection("Organizations").doc(orgs).collection("tokens").get();
+  QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection("Organizations").doc(orgs).collection("tokens").orderBy("time").where("time",
+      isGreaterThanOrEqualTo: DateTime(dates.year, dates.month, dates.day)).get();
  return querySnapshot.docs;
 }
 
@@ -20,7 +22,9 @@ getTokens(var orgs)async {
 
     Future data = getTokens(selectedOrganization);
     return SingleChildScrollView(
+      physics: ScrollPhysics(),
       child: Column(
+
         children: [
           StreamBuilder<QuerySnapshot>(
               stream: Firestore.instance.collection("Organizations").snapshots(),
@@ -82,14 +86,20 @@ getTokens(var orgs)async {
                    child: CircularProgressIndicator(),
                  );
                } else
+                 print(snapshot.data.length);
                  return snapshot.data.length == 0 || snapshot.data.length == null ? Container(child: Text("No Tokens"),) :
+
                  ListView.builder(
+                     physics: NeverScrollableScrollPhysics(),
                      shrinkWrap: true,
                      itemCount: snapshot.data.length,
                      itemBuilder: (context, index){
+
                        return Container(
-                           height: MediaQuery.of(context).size.height *0.3,
-                           child: Tokens(name: snapshot.data[index].data()["name"], tokenNum: snapshot.data[index].data()["tokenNum"].toString(),));
+                           height: MediaQuery.of(context).size.height *0.1,
+
+                           child:
+                           Tokens(name: snapshot.data[index].data()["name"], tokenNum: snapshot.data[index].data()["tokenNum"].toString(),));
                      }
                  );
              }
@@ -116,7 +126,7 @@ class _TokensState extends State<Tokens> {
     return Scaffold(
       body:Container(
         decoration: BoxDecoration(
-          border: Border.all()
+          border: Border.all(),
         ),
         child: ListTile(
           leading: Icon(
