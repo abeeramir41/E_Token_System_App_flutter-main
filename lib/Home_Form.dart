@@ -150,7 +150,7 @@ class _InputTokenState extends State<InputToken> {
                   color: Colors.green,
                   onPressed: () async {
                       if (_formkey.currentState.validate()){
-
+                        // add token in organization
                         await FirebaseFirestore.instance.collection("Organizations").doc(selectedOrganization)
                         .collection("tokens").doc(tokenNum.toString()).set(
                           {
@@ -161,6 +161,7 @@ class _InputTokenState extends State<InputToken> {
                             "time" : DateTime.now()
                           }
                         );
+                        // update token number in database
                         await FirebaseFirestore.instance.collection("tokenNum").doc(selectedOrganization)
                             .update(
                             {

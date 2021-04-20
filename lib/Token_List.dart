@@ -9,9 +9,14 @@ class TokenList extends StatefulWidget {
 class _TokenListState extends State<TokenList> {
   var selectedOrganization;
   int time = 0;
+
+
+  // function to get token of selected organization
 getTokens(var orgs)async {
+  // current time to get only today's token
   DateTime dates = DateTime.now();
   print(orgs);
+//  firebase query to retrive token
   QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection("Organizations").doc(orgs).collection("tokens").orderBy("time").where("time",
       isGreaterThanOrEqualTo: DateTime(dates.year, dates.month, dates.day)).get();
  return querySnapshot.docs;
@@ -27,6 +32,7 @@ getTokens(var orgs)async {
       child: Column(
 
         children: [
+          // show organizations from firebase to dropdown
           StreamBuilder<QuerySnapshot>(
               stream: Firestore.instance.collection("Organizations").snapshots(),
               builder: (context, snapshot) {
@@ -64,6 +70,7 @@ getTokens(var orgs)async {
                       );
                       Scaffold.of(context).showSnackBar(snackBar);
                       setState(() {
+                        // assign selected organizations
                         selectedOrganization = orgs;
                       });
                       print(selectedOrganization);
@@ -89,12 +96,13 @@ getTokens(var orgs)async {
                } else
                  print(snapshot.data.length);
                  return snapshot.data.length == 0 || snapshot.data.length == null ? Container(child: Text("No Tokens"),) :
-
+                // show all tokens of selected organization
                  ListView.builder(
                      physics: NeverScrollableScrollPhysics(),
                      shrinkWrap: true,
                      itemCount: snapshot.data.length,
                      itemBuilder: (context, index){
+                       // estimated time
                      time = time + 3;
                        return Container(
                            height: MediaQuery.of(context).size.height *0.1,
@@ -113,6 +121,8 @@ getTokens(var orgs)async {
 
 }
 
+
+// token UI
 class Tokens extends StatefulWidget {
   String name;
   String tokenNum;

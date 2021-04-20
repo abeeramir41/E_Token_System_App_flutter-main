@@ -17,8 +17,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
   String email;
 
+  // getting current user data function
   getUser()async {
+    // currents user id
     user = FirebaseAuth.instance.currentUser;
+    // quert to get current user data
    DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance.collection("Organizations").doc(user.uid).get();
    print(documentSnapshot.data()["name"]);
    setState(() {

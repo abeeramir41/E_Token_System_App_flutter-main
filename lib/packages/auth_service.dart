@@ -12,34 +12,20 @@ class AuthService {
   final FirebaseMessaging _fcm = FirebaseMessaging();
 
 
-  Future<User> signIn(String email, String password) async {
-    var user = await _auth.signInWithEmailAndPassword(
-        email: email, password: password);
-    FirebaseAuth.instance
-        .authStateChanges()
-        .listen((User user) {
-      if (user == null) {
-        print('User is currently signed out!');
-      } else {
-        print('User is signed in!');
-      }
-    });
-    return user.user;
-  }
 
-  signOut() async {
-    return await _auth.signOut();
-  }
-
+// sign up code
   Future<User> createPerson(String name, String email, String password,String Phone) async {
+    // sign up user with email and password
     var user = await _auth.createUserWithEmailAndPassword(
         email: email, password: password);
-//    String fcmToken= await _fcm.getToken();
+
+    // adding data to organization table on successful sign up
     await _firestore
         .collection("Organizations")
         .doc(user.user.uid)
-        .set({'name': name, 'email': email,'phone':Phone,'uid': user.user.uid,'tokenNum': 1000,'status':false, });
-
+        .set({'name': name, 'email': email,'phone':Phone,'uid': user.user.uid, });
+// adding data to tokenNum table on successful sign up
+    // we will give default tokenNum
     await _firestore
         .collection("tokenNum")
         .doc(user.user.uid)

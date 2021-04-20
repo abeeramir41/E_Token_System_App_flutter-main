@@ -18,14 +18,17 @@ class Login_form extends StatefulWidget {
 
 class _Login_formState extends State<Login_form> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  AuthService _authService = AuthService();
+
   final emailController=TextEditingController();
   final passwordController=TextEditingController();
   String stateuss;
   @override
 
+
+  // Sign in code when user click on log in button
   Future<User> ifRegister(String email, String pass) async {
     try {
+      // firebase authentication query
       var result = await _auth.signInWithEmailAndPassword(email: email, password: pass);
       //await getUser();
       return result.user;
@@ -68,6 +71,7 @@ class _Login_formState extends State<Login_form> {
                         height: 35.0,
                         child: RaisedButton(
                           onPressed: ()  async {
+                            //sign in function call if user sign in successful
                             User result = await ifRegister(emailController.text, passwordController.text);
                             if(result != null){
                               Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => Organization_Page()) );
@@ -102,6 +106,7 @@ class _Login_formState extends State<Login_form> {
                         child: RaisedButton(
                           onPressed: ()   {
                             setState(() {
+                              // signup form page
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(

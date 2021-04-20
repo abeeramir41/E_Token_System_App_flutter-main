@@ -12,20 +12,19 @@ class Organization_Page extends StatefulWidget {
 class _Organization_PageState extends State<Organization_Page> {
   Future data;
   User user;
+
+  // get all organization token
   getTokens()async {
     DateTime dates = DateTime.now();
+    // getting current user Id
      user = FirebaseAuth.instance.currentUser;
+     // getting documents query
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection("Organizations").doc(user.uid).collection("tokens").where("time",
         isGreaterThanOrEqualTo: DateTime(dates.year, dates.month, dates.day)).get();
     return querySnapshot.docs;
   }
 
-  @override
-  void initState() {
-   getTokens();
-    // TODO: implement initState
-    super.initState();
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +66,7 @@ class _Organization_PageState extends State<Organization_Page> {
                 );
               } else
                 return snapshot.data.length == 0 || snapshot.data.length == null ? Container(child: Center(child: Text("No Tokens")),) :
+                // show all organization tokens
                 ListView.builder(
                     itemCount: snapshot.data.length,
                     itemBuilder: (context, index){
@@ -87,6 +87,7 @@ class _Organization_PageState extends State<Organization_Page> {
                                     actions: [
                                       TextButton(onPressed: ()async {
                                         Navigator.pop(context);
+                                        // delete selected token
                                         FirebaseFirestore.instance.collection("Organizations")
                                             .doc(user.uid).collection("tokens").doc(snapshot.data[index].data()["tokenNum"].toString())
                                             .delete()

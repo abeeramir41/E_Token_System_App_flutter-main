@@ -76,7 +76,8 @@ class SignUpFormState extends State<SignUpForm> {
         child: Image.asset('assets/images/Splashscreenet.png',),
       ),
     ),);
-    formWidget.add(new TextFormField(
+    formWidget.add(
+        new TextFormField(
       controller: fullnameController,
         decoration: InputDecoration(labelText: 'Enter User Name', hintText: 'Company Name'),
         validator: (value) {
