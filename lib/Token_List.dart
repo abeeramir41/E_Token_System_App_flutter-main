@@ -8,16 +8,17 @@ class TokenList extends StatefulWidget {
 
 class _TokenListState extends State<TokenList> {
   var selectedOrganization;
+  var selectedDepartment;
   int time = 0;
 
 
   // function to get token of selected organization
-getTokens(var orgs)async {
+getTokens(var orgs, var dep)async {
   // current time to get only today's token
   DateTime dates = DateTime.now();
   print(orgs);
 //  firebase query to retrive token
-  QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection("Organizations").doc(orgs).collection("tokens").orderBy("time").where("time",
+  QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection("Organizations").doc(orgs).collection("department").doc(selectedDepartment).collection("tokens").orderBy("time").where("time",
       isGreaterThanOrEqualTo: DateTime(dates.year, dates.month, dates.day)).get();
  return querySnapshot.docs;
 }
@@ -26,7 +27,7 @@ getTokens(var orgs)async {
   Widget build(BuildContext context) {
    // String dropdownValue = 'Select';
 
-    Future data = getTokens(selectedOrganization);
+    Future data = getTokens(selectedOrganization, selectedDepartment);
     return SingleChildScrollView(
       physics: ScrollPhysics(),
       child: Column(
@@ -85,7 +86,63 @@ getTokens(var orgs)async {
                 }
               }
           ),
-         SizedBox(height: 10,),
+          SizedBox(height: 10.0,),
+          StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance.collection("Organizations").doc(selectedOrganization).collection("department").snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData)
+                  return CircularProgressIndicator();
+                else {
+                  List<DropdownMenuItem> department = [];
+                  for (int i = 0; i < snapshot.data.docs.length; i++) {
+                    DocumentSnapshot snap = snapshot.data.docs[i];
+                    department.add(
+                      DropdownMenuItem(
+                        child: Text(
+                          snap['name'],
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        value: "${snap.id}",
+                      ),
+                    );
+                  }
+                  return DropdownButton(
+                    style: TextStyle(color: Colors.black87),
+                    underline: Container(
+                      height: 2,
+
+                      color: Colors.green,
+                    ),
+                    icon: Icon(Icons.arrow_downward),
+                    items: department,
+                    onChanged: (orgs) async {
+                      final snackBar = SnackBar(
+                        content: Text(
+                          'Selected Organization value is a $orgs',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      );
+                      Scaffold.of(context).showSnackBar(snackBar);
+                      var num =await FirebaseFirestore.instance.collection("Organization").doc(selectedOrganization).collection("department").doc(orgs).collection("tokenNum").doc().get();
+                      //tokenNum = num.data()["tokenNum"];
+                      //print(tokenNum);
+                      setState(() {
+                        selectedDepartment = orgs;
+                      });
+                    },
+                    value: selectedDepartment,
+                    isExpanded: true,
+                    hint: new Text(
+                      "Choose Department",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  );
+                }
+
+              }
+          ),
+
+          SizedBox(height: 10,),
          FutureBuilder(
              future: data,
              builder: (context, snapshot){
