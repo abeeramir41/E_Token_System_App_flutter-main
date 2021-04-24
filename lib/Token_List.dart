@@ -9,7 +9,7 @@ class TokenList extends StatefulWidget {
 class _TokenListState extends State<TokenList> {
   var selectedOrganization;
   var selectedDepartment;
-  int time = 0;
+
 
 
   // function to get token of selected organization
@@ -26,7 +26,7 @@ getTokens(var orgs, var dep)async {
   @override
   Widget build(BuildContext context) {
    // String dropdownValue = 'Select';
-
+    int time = 0;
     Future data = getTokens(selectedOrganization, selectedDepartment);
     return SingleChildScrollView(
       physics: ScrollPhysics(),
@@ -63,13 +63,13 @@ getTokens(var orgs, var dep)async {
                     icon: Icon(Icons.arrow_downward),
                     items: organization,
                     onChanged: (orgs) {
-                      final snackBar = SnackBar(
-                        content: Text(
-                          'Selected Organization value is a $orgs',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      );
-                      Scaffold.of(context).showSnackBar(snackBar);
+                      // final snackBar = SnackBar(
+                      //   content: Text(
+                      //     'Selected Organization value is a $orgs',
+                      //     style: TextStyle(color: Colors.black),
+                      //   ),
+                      // );
+                      // Scaffold.of(context).showSnackBar(snackBar);
                       setState(() {
                         // assign selected organizations
                         selectedOrganization = orgs;
@@ -116,13 +116,13 @@ getTokens(var orgs, var dep)async {
                     icon: Icon(Icons.arrow_downward),
                     items: department,
                     onChanged: (orgs) async {
-                      final snackBar = SnackBar(
-                        content: Text(
-                          'Selected Organization value is a $orgs',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      );
-                      Scaffold.of(context).showSnackBar(snackBar);
+                      // final snackBar = SnackBar(
+                      //   content: Text(
+                      //     'Selected Organization value is a $orgs',
+                      //     style: TextStyle(color: Colors.black),
+                      //   ),
+                      // );
+                      // Scaffold.of(context).showSnackBar(snackBar);
                       var num =await FirebaseFirestore.instance.collection("Organization").doc(selectedOrganization).collection("department").doc(orgs).collection("tokenNum").doc().get();
                       //tokenNum = num.data()["tokenNum"];
                       //print(tokenNum);

@@ -53,13 +53,18 @@ class SignUpFormState extends State<SignUpForm> {
       appBar: AppBar(
         title: Text('Register Now'),
       ),
-      body: Form(
-        key: _formKey,
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: new ListView(
-              children: getFormWidget(),
+      body: Center(
+        child: SingleChildScrollView(
+          physics: NeverScrollableScrollPhysics(),
+          child: Form(
+            key: _formKey,
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: new Column(
+                  children: getFormWidget(),
+                ),
+              ),
             ),
           ),
         ),
