@@ -1,4 +1,4 @@
-import 'dart:math';
+// import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -59,13 +59,13 @@ class _InputTokenState extends State<InputToken> {
           icon: Icon(Icons.arrow_downward),
             items: organization,
             onChanged: (orgs) async {
-          final snackBar = SnackBar(
-            content: Text(
-              'Selected Organization value is a $orgs',
-              style: TextStyle(color: Colors.black),
-            ),
-          );
-          Scaffold.of(context).showSnackBar(snackBar);
+          // final snackBar = SnackBar(
+          //   content: Text(
+          //     'Selected Organization value is a $orgs',
+          //     style: TextStyle(color: Colors.black),
+          //   ),
+          // );
+          // Scaffold.of(context).showSnackBar(snackBar);
           var num =await FirebaseFirestore.instance.collection("tokenNum").doc(orgs).get();
           tokenNum = num.data()["tokenNum"];
           print(tokenNum);
@@ -115,13 +115,13 @@ class _InputTokenState extends State<InputToken> {
                         icon: Icon(Icons.arrow_downward),
                         items: department,
                         onChanged: (orgs) async {
-                          final snackBar = SnackBar(
-                            content: Text(
-                              'Selected Organization value is a $orgs',
-                              style: TextStyle(color: Colors.black),
-                            ),
-                          );
-                          Scaffold.of(context).showSnackBar(snackBar);
+                          // final snackBar = SnackBar(
+                          //   content: Text(
+                          //     'Selected Organization value is a $orgs',
+                          //     style: TextStyle(color: Colors.black),
+                          //   ),
+                          // );
+                          // Scaffold.of(context).showSnackBar(snackBar);
                           var num =await FirebaseFirestore.instance.collection("Organization").doc(selectedOrganization).collection("department").doc(orgs).collection("tokenNum").doc().get();
                           //tokenNum = num.data()["tokenNum"];
                           print(tokenNum);
